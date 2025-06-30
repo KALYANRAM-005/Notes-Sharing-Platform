@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Notes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f4f7f9;
+            color: #333;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .title-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .course-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .course-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .top-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .back-btn {
+            background-color: #4285f4;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            flex-grow: 1;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid #4285f4;
+            color: #4285f4;
+        }
+        
+        .search-upload-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .search-container {
+            display: flex;
+            max-width: 500px;
+            flex-grow: 1;
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px 0 0 25px;
+            outline: none;
+        }
+        
+        .search-container button {
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0 25px 25px 0;
+        }
+        
+        .upload-btn, .request-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .request-btn {
+            background-color: #FF9800;
+            margin-bottom: 20px;
+        }
+        
+        .upload-btn i, .request-btn i {
+            font-size: 16px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .notes-list {
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .note-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        
+        .note-item:last-child {
+            border-bottom: none;
+        }
+        
+        .note-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .note-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .note-title {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        
+        .note-uploader {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .note-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .download-btn, .rate-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .download-btn {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .rate-btn {
+            background-color: #FFC107;
+            color: #333;
+        }
+        
+        .no-notes {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .form-actions button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .form-actions .cancel {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .form-actions .submit {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        /* Rating Modal Styles */
+        .stars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .star {
+            font-size: 24px;
+            cursor: pointer;
+            color: #ddd;
+        }
+        
+        .star.active {
+            color: #FFC107;
+        }
+        
+        /* Upload Progress */
+        .progress-container {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .announcements-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .announcement {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .announcement:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .announcement-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .announcement-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .announcement-content {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="title-container">
+        <div class="course-title" id="course-name">Course Name</div>
+        <div class="course-subtitle" id="course-id">Course ID</div>
+    </div>
+    
+    <div class="top-actions">
+        <button id="logout-btn" class="logout-btn">Logout</button>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <button class="back-btn" id="back-btn">← Back to Courses</button>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" data-tab="files">Files</div>
+        <div class="tab" data-tab="announcements">Requests</div>
+    </div>
+    
+    <!-- Files Tab Content -->
+    <div class="tab-content active" id="files-content">
+        <div class="search-upload-container">
+            <form class="search-container" id="search-form">
+                <input type="text" id="search-input" placeholder="Search by note title...">
+                <button type="submit">Search</button>
+            </form>
+            
+            <button class="upload-btn" id="upload-btn">
+                <i>↑</i> Upload Notes
+            </button>
+        </div>
+        
+        <div class="notes-list" id="notes-list">
+            <!-- Notes will be loaded here -->
+            <div class="no-notes">Loading notes...</div>
+        </div>
+    </div>
+    
+    <!-- Announcements Tab Content (Renamed to Requests) -->
+    <div class="tab-content" id="announcements-content">
+        <button class="request-btn" id="request-btn">
+            <i>?</i> Request Notes
+        </button>
+        <div class="announcements-container" id="announcements-container">
+            <div class="no-notes">Loading note requests...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal" id="upload-modal">
+    <div class="modal-content">
+        <span class="close-btn" id="close-upload">&times;</span>
+        <h2>Upload Notes</h2>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="note-title">Title</label>
+                <input type="text" id="note-title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="note-file">File</label>
+                <input type="file" id="note-file" name="noteFile" required>
+            </div>
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel" id="cancel-upload">Cancel</button>
+                <button type="submit" class="submit">Upload</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Rate Modal -->
+<div class="modal" id="rate-modal">
+    <div class="modal-content">
+        <span class="close-btn" id="close-rate">&times;</span>
+        <h2>Rate Note</h2>
+        <form id="rate-form">
+            <input type="hidden" id="note-id" name="noteId">
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="stars">
+                    <span class="star" data-value="1">★</span>
+                    <span class="star" data-value="2">★</span>
+                    <span class="star" data-value="3">★</span>
+                    <span class="star" data-value="4">★</span>
+                    <span class="star" data-value="5">★</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="comment">Comment (Optional)</label>
+                <textarea id="comment" name="comment" rows="4"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel" id="cancel-rate">Cancel</button>
+                <button type="submit" class="submit">Submit Rating</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Request Modal -->
+<div class="modal" id="request-modal">
+    <div class="modal-content">
+        <span class="close-btn" id="close-request">&times;</span>
+        <h2>Request Notes</h2>
+        <form id="request-form">
+            <div class="form-group">
+                <label for="request-topic">Topic</label>
+                <input type="text" id="request-topic" name="topic" required placeholder="What notes are you looking for?">
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cancel" id="cancel-request">Cancel</button>
+                <button type="submit" class="submit">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Global variables
+    let courseId = '';
+    let studentId = '';
+    let allNotes = [];
+    
+    // Initialize when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the course ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        courseId = urlParams.get('id');
+        
+        if (!courseId) {
+            // Redirect to courses page if no ID is provided
+            window.location.href = '/courses.html';
+            return;
+        }
+        
+        // Fetch user info and course data
+        fetchUserInfo()
+            .then(() => fetchCourseDetails())
+            .then(() => fetchNotes())
+            .catch(error => {
+                console.error('Error initializing page:', error);
+            });
+        
+        // Setup event listeners
+        setupEventListeners();
+    });
+    
+    // Fetch user information
+    function fetchUserInfo() {
+        return fetch('/api/user')
+            .then(response => {
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    throw new Error('Not logged in');
+                }
+                return response.json();
+            })
+            .then(data => {
+                studentId = data.user.student_id;
+            });
+    }
+    
+    // Fetch course details
+    function fetchCourseDetails() {
+        return fetch(`/api/course-details?id=${courseId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch course details');
+                }
+                return response.json();
+            })
+            .then(course => {
+                document.getElementById('course-name').textContent = course.course_name;
+                document.getElementById('course-id').textContent = course.course_id;
+                document.title = `Notes - ${course.course_id}`;
+            });
+    }
+    
+    // Fetch notes for this course
+    function fetchNotes() {
+        return fetch(`/api/notes?courseId=${courseId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch notes');
+                }
+                return response.json();
+            })
+            .then(notes => {
+                allNotes = notes;
+                displayNotes(notes);
+            });
+    }
+    
+    // Display notes in the list
+    function displayNotes(notes) {
+        const container = document.getElementById('notes-list');
+        
+        if (notes.length === 0) {
+            container.innerHTML = `
+                <div class="no-notes">
+                    No notes available for this course yet.
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        notes.forEach(note => {
+            html += `
+                <div class="note-item">
+                    <div class="note-info">
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-uploader">Uploaded by: ${note.student_name} · Rating: ${parseFloat(note.average_rating || 0).toFixed(1)}/5.0</div>
+                    </div>
+                    <div class="note-actions">
+                        <button class="rate-btn" onclick="openRateModal(${note.note_id})">
+                            ★ Rate
+                        </button>
+                        <button class="download-btn" onclick="downloadNote(${note.note_id}, '${note.file_url}')">
+                            ↓ Download
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    // Setup all event listeners
+    function setupEventListeners() {
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                this.classList.add('active');
+                
+                // Show the corresponding content
+                const tabName = this.getAttribute('data-tab');
+                document.getElementById(`${tabName}-content`).classList.add('active');
+                
+                // Load note requests if that tab is selected
+                if (tabName === 'announcements') {
+                    fetchNoteRequests();
+                }
+            });
+        });
+        
+        // Search form
+        document.getElementById('search-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
+            
+            if (searchTerm === '') {
+                displayNotes(allNotes);
+            } else {
+                const filteredNotes = allNotes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm)
+                );
+                displayNotes(filteredNotes);
+            }
+        });
+        
+        // Button events
+        document.getElementById('back-btn').addEventListener('click', function() {
+            window.location.href = '/courses.html';
+        });
+        
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            fetch('/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/index.html';
+                })
+                .catch(error => {
+                    console.error('Error logging out:', error);
+                });
+        });
+        
+        // Upload modal events
+        document.getElementById('upload-btn').addEventListener('click', openUploadModal);
+        document.getElementById('close-upload').addEventListener('click', closeUploadModal);
+        document.getElementById('cancel-upload').addEventListener('click', closeUploadModal);
+        
+        // Rate modal events
+        document.getElementById('close-rate').addEventListener('click', closeRateModal);
+        document.getElementById('cancel-rate').addEventListener('click', closeRateModal);
+        
+        // Request modal events
+        document.getElementById('request-btn').addEventListener('click', openRequestModal);
+        document.getElementById('close-request').addEventListener('click', closeRequestModal);
+        document.getElementById('cancel-request').addEventListener('click', closeRequestModal);
+        
+        // Star rating system
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                highlightStars(value);
+            });
+        });
+        
+        // Upload form submission
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            uploadNote();
+        });
+        
+        // Rate form submission
+        document.getElementById('rate-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitRating();
+        });
+
+        // Request form submission
+        document.getElementById('request-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitRequest();
+        });
+    }
+    
+    // Fetch note requests for this course
+    function fetchNoteRequests() {
+        const container = document.getElementById('announcements-container');
+        
+        // Show loading state
+        container.innerHTML = `<div class="no-notes">Loading note requests...</div>`;
+        
+        fetch(`/api/note-requests?courseId=${courseId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch note requests');
+                }
+                return response.json();
+            })
+            .then(requests => {
+                if (requests.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-notes">
+                            No note requests for this course yet.
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                requests.forEach(request => {
+                    // Format the date nicely
+                    const requestDate = new Date(request.request_date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    html += `
+                        <div class="announcement">
+                            <div class="announcement-title">${request.topic_requested}</div>
+                            <div class="announcement-meta">Requested by: ${request.student_name} on ${requestDate}</div>
+                            <div class="announcement-content">
+                                If you have notes on this topic, please consider uploading them in the Files tab.
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error fetching note requests:', error);
+                container.innerHTML = `
+                    <div class="no-notes">
+                        Error loading note requests. Please try again later.
+                    </div>
+                `;
+            });
+    }
+    
+    // Open upload modal
+    function openUploadModal() {
+        document.getElementById('upload-modal').style.display = 'block';
+    }
+    
+    // Close upload modal
+    function closeUploadModal() {
+        document.getElementById('upload-modal').style.display = 'none';
+        document.getElementById('upload-form').reset();
+        document.getElementById('progress-container').style.display = 'none';
+        document.getElementById('progress').style.width = '0%';
+    }
+    
+    // Open rate modal
+    function openRateModal(noteId) {
+        document.getElementById('note-id').value = noteId;
+        document.getElementById('rate-modal').style.display = 'block';
+        // Reset stars
+        highlightStars(0);
+    }
+    
+    // Close rate modal
+    function closeRateModal() {
+        document.getElementById('rate-modal').style.display = 'none';
+        document.getElementById('rate-form').reset();
+    }
+    
+    // Open request modal
+    function openRequestModal() {
+        document.getElementById('request-modal').style.display = 'block';
+    }
+    
+    // Close request modal
+    function closeRequestModal() {
+        document.getElementById('request-modal').style.display = 'none';
+        document.getElementById('request-form').reset();
+    }
+    
+    // Highlight stars based on rating
+    function highlightStars(rating) {
+        document.querySelectorAll('.star').forEach(star => {
+            if (parseInt(star.getAttribute('data-value')) <= rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+    
+    // Upload a note
+    function uploadNote() {
+        const titleInput = document.getElementById('note-title');
+        const fileInput = document.getElementById('note-file');
+        
+        if (!titleInput.value.trim() || !fileInput.files[0]) {
+            alert('Please provide a title and select a file');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('title', titleInput.value);
+        formData.append('noteFile', fileInput.files[0]);
+        formData.append('courseId', courseId);
+        formData.append('uploaderId', studentId);
+        
+        // Show progress bar
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress');
+        progressContainer.style.display = 'block';
+        
+        // Simulate upload progress (in a real app, you would use XMLHttpRequest or fetch with progress events)
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                
+                // Submit the form
+                fetch('/api/upload-note', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Upload failed');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    closeUploadModal();
+                    // Refresh notes list
+                    fetchNotes();
+                    alert('Note uploaded successfully!');
+                })
+                .catch(error => {
+                    console.error('Error uploading note:', error);
+                    alert('Failed to upload note. Please try again.');
+                    progressContainer.style.display = 'none';
+                });
+            }
+        }, 100);
+    }
+    
+    // Submit a rating
+    function submitRating() {
+        const noteId = document.getElementById('note-id').value;
+        const comment = document.getElementById('comment').value;
+        
+        // Get selected rating
+        let rating = 0;
+        document.querySelectorAll('.star.active').forEach(star => {
+            const value = parseInt(star.getAttribute('data-value'));
+            if (value > rating) rating = value;
+        });
+        
+        if (rating === 0) {
+            alert('Please select a rating');
+            return;
+        }
+        
+        const data = {
+            noteId: noteId,
+            studentId: studentId,
+            rating: rating,
+            comment: comment
+        };
+        
+        fetch('/api/rate-note', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Rating submission failed');
+            }
+            return response.json();
+        })
+        .then(() => {
+            closeRateModal();
+            // Refresh notes list to show updated ratings
+            fetchNotes();
+            alert('Rating submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error submitting rating:', error);
+            alert('Failed to submit rating. Please try again.');
+        });
+    }
+    
+    // Submit a note request
+    function submitRequest() {
+        const topic = document.getElementById('request-topic').value.trim();
+        
+        if (!topic) {
+            alert('Please enter a topic');
+            return;
+        }
+        
+        const data = {
+            studentId: studentId,
+            courseId: courseId,
+            topic: topic
+        };
+        
+        fetch('/api/submit-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Request submission failed');
+            }
+            return response.json();
+        })
+        .then(() => {
+            closeRequestModal();
+            // Refresh requests list
+            fetchNoteRequests();
+            alert('Note request submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error submitting request:', error);
+            alert('Failed to submit request. Please try again.');
+        });
+    }
+    
+    // Download a note
+    function downloadNote(noteId, fileUrl) {
+        // In a real app, you would handle file downloads through the server
+        window.location.href = `/api/download-note?id=${noteId}`;
+    }
+</script>
+
+</body>
+</html>

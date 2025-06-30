@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+.container {
+    width: 400px; /* Increased width */
+    padding: 30px; /* Increased padding */
+    background: white;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Softer, more natural shadow */
+    border-radius: 12px; /* Slightly larger rounded corners */
+    text-align: center;
+}
+
+input, button {
+    width: 100%; /* Ensures input and button stretch across the box */
+    max-width: 350px; /* Limits max width for readability */
+    display: block;
+    margin: 15px auto; /* More spacing between elements */
+    padding: 12px; /* Increased padding */
+    font-size: 16px; /* Slightly bigger text */
+}
+
+button {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
