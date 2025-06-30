@@ -116,7 +116,7 @@ The platform uses MySQL with the following main tables:
 
 ---
 
----
+
 ## Database Design
 
 ### Core Tables
